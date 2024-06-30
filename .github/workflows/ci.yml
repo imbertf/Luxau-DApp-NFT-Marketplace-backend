@@ -24,7 +24,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn ci
+        run: yarn install
 
       - name: Run Tests
         run: yarn hardhat test

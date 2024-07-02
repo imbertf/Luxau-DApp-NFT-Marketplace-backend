@@ -31,9 +31,18 @@ describe("LuxauNFT", function () {
 
   describe("MINT", function () {
     describe("checks", function () {
+      it('Should revert if not owner', async function () {
+        const { luxauNFT, otherAccount } = await loadFixture(deployContractFixture);
+        await expect(luxauNFT.connect(otherAccount).safeMint({ value: ethers.parseEther("0.01") })).to.be.revertedWithCustomError(luxauNFT, 'OwnableUnauthorizedAccount');
+      })
       it('Should NOT mint if not expected minimum price', async function () {
         const { luxauNFT, owner } = await loadFixture(deployContractFixture);
         await expect(luxauNFT.safeMint({ value: ethers.parseEther("0.001") })).to.be.revertedWith("Minimum price to mint is 0.01 ETH")
+      })
+      it('Should NOT mint twice', async function () {
+        const { luxauNFT, owner } = await loadFixture(deployContractFixture);
+        expect(await luxauNFT.safeMint({ value: ethers.parseEther("0.01") }));
+        await expect(luxauNFT.safeMint({ value: ethers.parseEther("0.01") })).to.be.revertedWith("You can mint only once");
       })
     })
     describe("effects", function () {
@@ -52,10 +61,9 @@ describe("LuxauNFT", function () {
         await expect(luxauNFT.tokenURI(1)).to.be.revertedWith("Token doesn't exist")
       })
       it('Should NOT revert if token exist', async function () {
-        const { luxauNFT, owner, otherAccount } = await loadFixture(deployContractFixture);
+        const { luxauNFT, owner } = await loadFixture(deployContractFixture);
         expect(await luxauNFT.safeMint({ value: ethers.parseEther("0.01") }))
-        expect(await luxauNFT.connect(otherAccount).safeMint({ value: ethers.parseEther("0.01") }))
-        await expect(luxauNFT.tokenURI(1)).to.be.not.revertedWith("Token doesn't exist")
+        await expect(luxauNFT.tokenURI(0)).to.be.not.revertedWith("Token doesn't exist")
       })
     })
 

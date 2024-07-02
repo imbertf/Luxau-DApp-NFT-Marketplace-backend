@@ -6,11 +6,13 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
+
 contract LuxauNFT is ERC721Enumerable, Ownable {
     using Strings for uint;
     string public baseURI;
     uint256 private _nextTokenId;
-    uint256 private constant MINT_PRICE = 10000000000000000 wei;
+    uint256 private constant PRICE_MINT_NFT = 10000000000000000 wei;
+    uint256 private constant MAX_SUPPLY = 1;
 
     constructor(
         string memory _name,
@@ -20,8 +22,9 @@ contract LuxauNFT is ERC721Enumerable, Ownable {
         baseURI = _baseURI;
     }
 
-    function safeMint() external payable {
-        require(msg.value >= MINT_PRICE,"Minimum price to mint is 0.01 ETH");
+    function safeMint() external payable onlyOwner {
+        require(msg.value >= PRICE_MINT_NFT,"Minimum price to mint is 0.01 ETH");
+        require(_nextTokenId < MAX_SUPPLY,"You can mint only once");
         uint256 tokenId = _nextTokenId++;
         _safeMint(msg.sender, tokenId);
     }

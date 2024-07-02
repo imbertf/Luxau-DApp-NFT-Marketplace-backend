@@ -30,7 +30,7 @@ contract LuxauNFT is ERC721Enumerable, Ownable {
     }
  
     function tokenURI(uint _tokenId) public view virtual override (ERC721) returns (string memory) {
-         require(_ownerOf(_tokenId) != address(0), "Token doesn't exist");
+         _requireOwned(_tokenId);
         return string(abi.encodePacked((baseURI), "/product_", _tokenId.toString(), ".json"));
     }
 }

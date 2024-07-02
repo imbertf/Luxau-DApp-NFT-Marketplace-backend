@@ -58,12 +58,12 @@ describe("LuxauNFT", function () {
       it('Should revert if token does not exist', async function () {
         const { luxauNFT, owner } = await loadFixture(deployContractFixture);
         expect(await luxauNFT.safeMint({ value: ethers.parseEther("0.01") }))
-        await expect(luxauNFT.tokenURI(1)).to.be.revertedWith("Token doesn't exist")
+        await expect(luxauNFT.tokenURI(1)).to.be.revertedWithCustomError(luxauNFT, 'ERC721NonexistentToken')
       })
       it('Should NOT revert if token exist', async function () {
         const { luxauNFT, owner } = await loadFixture(deployContractFixture);
         expect(await luxauNFT.safeMint({ value: ethers.parseEther("0.01") }))
-        await expect(luxauNFT.tokenURI(0)).to.be.not.revertedWith("Token doesn't exist")
+        await expect(luxauNFT.tokenURI(0)).to.be.not.revertedWithCustomError(luxauNFT, 'ERC721NonexistentToken')
       })
     })
 

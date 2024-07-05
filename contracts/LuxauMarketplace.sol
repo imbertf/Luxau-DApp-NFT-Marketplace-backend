@@ -3,7 +3,6 @@ pragma solidity 0.8.24;
 
 // Imports
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
@@ -42,7 +41,7 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
     mapping(address => Brand) public registeredBrands;
     mapping(address => Client) registeredClients;
     mapping(address => NFT[]) public brandNFTs;
-    uint256 NFT_CREATION_PRICE = 1;
+    uint256 constant NFT_CREATION_PRICE = 1;
     uint256 totalTokens = 0;
 
 
@@ -109,8 +108,6 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
     function createNFT( IERC721 _NFTAddress, uint256 _tokenId, uint256 _price, string memory _description ) external payable onlyBrand nonReentrant {
         require( msg.value >= NFT_CREATION_PRICE, "Minimal price is 1 ETH to create NFT" );
 
-        _NFTAddress.safeTransferFrom(msg.sender, address(this), _tokenId);
-
         NFT memory newNFT = NFT(
             _NFTAddress,
             payable(msg.sender),
@@ -121,8 +118,9 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
         );
 
         brandNFTs[msg.sender].push(newNFT);
-
         totalTokens++;
+
+        _NFTAddress.safeTransferFrom(msg.sender, address(this), _tokenId);
 
         emit NFTCreated(msg.sender, _tokenId, _price, _description);
     }

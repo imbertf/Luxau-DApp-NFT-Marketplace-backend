@@ -40,11 +40,11 @@ contract LuxauNFT is ERC721Enumerable, Ownable {
      * Emits an event `NFTMinted` with relevant data upon successful minting.
      */
     function safeMint() external payable {
-        require(msg.value == PRICE_MINT_NFT, "Minimum price to mint is 0.0001 ETH");
+        require(msg.value >= PRICE_MINT_NFT, "Minimum price to mint is 0.0001 ETH");
         uint256 tokenId = _nextTokenId++;
         _safeMint(msg.sender, tokenId);
 
-        emit NFTMinted(tokenId, address(0), msg.sender, tokenURI(tokenId));
+        emit NFTMinted(tokenId, address(0), msg.sender, baseURI);
     }
 
     /**
@@ -54,9 +54,9 @@ contract LuxauNFT is ERC721Enumerable, Ownable {
      * 
      * @return string URI for the given token ID.
      */
-    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+    function tokenURI(uint256 _tokenId) public view virtual override (ERC721) returns (string memory) {
         _requireOwned(_tokenId);
-        return string(abi.encodePacked(baseURI, "/product_", tokenId.toString(), ".json"));
+        return string(abi.encodePacked(baseURI, "/product_", _tokenId.toString(), ".json"));
     }
 
     /**

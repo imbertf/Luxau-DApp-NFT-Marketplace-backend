@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.24;
+pragma solidity ^0.8.20;
 
 // Imports
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
@@ -40,8 +41,10 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
     **************************************/
     mapping(address => Brand) public registeredBrands;
     mapping(address => Client) registeredClients;
-    mapping(address => NFT[]) public brandNFTs;
-    uint256 constant NFT_CREATION_PRICE = 1;
+    mapping(address => mapping (uint256 => NFT)) public brandNFTs;
+    mapping(address => mapping (uint256 => NFT)) public clientNFTs;
+
+    uint256 NFT_CREATION_PRICE = 1;
     uint256 totalTokens = 0;
 
 
@@ -51,13 +54,8 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
     **************************************/
     event BrandRegistered(address brandAddress);
     event ClientRegistered(address clientAddress);
-    event NFTCreated(
-        address brandAddress,
-        uint256 tokenId,
-        uint256 price,
-        string description
-    );
-    event NFTSold(address NFTAddress);
+    event NFTCreated(address brandAddress, uint256 tokenId, uint256 price, string description);
+    event NFTSold(address from, address to, uint256 id, uint256 price);
 
 
 
@@ -93,6 +91,8 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
     /*************************************
      *             Functions              *
      **************************************/
+
+
     /**
      * @notice This function allows a registered brand to create an ERC721 NFT and list it on the LuxauMarketplace.
      * The NFT will be transferred from the caller's address to this contract's address after creation.
@@ -108,6 +108,8 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
     function createNFT( IERC721 _NFTAddress, uint256 _tokenId, uint256 _price, string memory _description ) external payable onlyBrand nonReentrant {
         require( msg.value >= NFT_CREATION_PRICE, "Minimal price is 1 ETH to create NFT" );
 
+        _NFTAddress.safeTransferFrom(msg.sender, address(this), _tokenId);
+
         NFT memory newNFT = NFT(
             _NFTAddress,
             payable(msg.sender),
@@ -117,45 +119,48 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
             false
         );
 
-        brandNFTs[msg.sender].push(newNFT);
+        brandNFTs[msg.sender][_tokenId] = newNFT;
         totalTokens++;
-
-        _NFTAddress.safeTransferFrom(msg.sender, address(this), _tokenId);
 
         emit NFTCreated(msg.sender, _tokenId, _price, _description);
     }
     
+    
     /**
-     * @notice This function allows a registered client to purchase an ERC721 NFT from a brand on the LuxauMarketplace. 
-     * The NFT will be transferred from this contract's address to the caller's address after the transaction is successful.
+     * @notice This function allows a registered client to buy an ERC721 NFT from a specified brand on the LuxauMarketplace. 
+     * The NFT will be transferred from this contract's address to the caller's address after purchase.
      * Only clients are allowed to use this function.
      * @dev This function is payable, meaning that ETH should be sent along with the transaction in order to buy an NFT. 
-     * The price of the NFT to be bought depends on the NFT's `price` variable which is set upon creation of the NFT by a brand.
+     * The minimum required amount of ETH for a successful transaction depends on the NFT's price which is retrieved from the LuxauMarketplace contract.
      * If not enough ETH was sent with the transaction, the function will fail.
-     * @param _brandAddress The address of the brand that lists the NFT for sale. This needs to be registered on this contract.
-     * @param _tokenId The id of the NFT that should be bought. This is a unique number within the scope of LuxauMarketplace and not already sold by another client.
+     * @param _brandAddress The address of the brand that owns and lists the NFT. This should be a registered brand in LuxauMarketplace.
+     * @param _tokenId The id of the NFT to buy. This is unique within the scope of this contract and not already sold by another client.
      */
     function buyNFT(address _brandAddress, uint256 _tokenId) external payable onlyClient nonReentrant {
-        NFT[] storage nfts = brandNFTs[_brandAddress];
-        bool nftFound = false;
+        NFT storage nft = brandNFTs[_brandAddress][_tokenId];
 
-        for (uint256 i = 0; i < nfts.length; i++) {
-            if (nfts[i].id == _tokenId && !nfts[i].isSold) {
-                require(msg.value >= nfts[i].price, "Insufficient funds to buy NFT");
-                nfts[i].seller.transfer(msg.value);
-                nfts[i].NFTAddress.safeTransferFrom(address(this), msg.sender, _tokenId);
-                nfts[i].isSold = true;
-                nftFound = true;
+        // Check if the NFT exists by checking a property of the NFT struct
+        require(nft.seller != address(0), "NFT doesn't exist");
+        require(!nft.isSold, "NFT already sold");
+        require(msg.value >= nft.price, "Insufficient funds to buy NFT");
 
-                emit NFTSold(address(nfts[i].NFTAddress));
+        // Transfer funds to the seller
+        (bool success, ) = _brandAddress.call{value: msg.value}("");
+        require (success, "transfer failed");
 
-                break;
-            }
-        }
+        // Transfer the NFT to the buyer
+        nft.NFTAddress.safeTransferFrom(address(this), msg.sender, _tokenId);
 
-        if (!nftFound) {
-            revert NFTnotFound(_tokenId, "NFT not found or already sold");
-        }
+        // Mark the NFT as sold
+        nft.isSold = true;
+
+        // Add the NFT to clientNFTs mapping
+        clientNFTs[msg.sender][_tokenId] = nft;
+
+        // Remove the NFT from the brandNFTs mapping
+        delete brandNFTs[_brandAddress][_tokenId];
+
+        emit NFTSold(nft.seller, msg.sender, nft.id, msg.value);
     }
 
     /** @notice
@@ -191,18 +196,17 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
 
     
     /** 
-     * @notice Returns a list of all NFTs (ERC721 tokens) belonging to a given brand.
-     * The returned array contains all NFT objects that belong to the provided brand address.
-     * This method can only be called by the contract's owner.
+     * @notice Returns an NFT owned by a client with given tokenId from a specific brand.
+     * @dev This function returns the details of an NFT that has been bought and is owned by a registered client.
+     * The returned NFT object contains information about its ERC721 contract address, seller's address, id, price, description, and sold status.
      * 
-     * @param _address The address of the brand for which to return the list of NFTs.
+     * @param _clientAddress The address of the client to return the details for.
+     * @param _tokenId The unique identifier of the NFT.
      * 
-     * @return nftList An array containing all NFT objects that belong to the provided brand address.
+     * @return nft An object containing all information related to an NFT (ERC721 contract, seller's address, id, price, description and sold status).
      */
-    function getBrandNFTList(address _address) external view onlyOwner returns (NFT[] memory) {
-        require( registeredBrands[_address].isRegistered, "Brand is not registered");
-        
-        return brandNFTs[_address];
+    function getClientNFT(address _clientAddress, uint256 _tokenId) external view returns (NFT memory) {
+        return clientNFTs[_clientAddress][_tokenId];
     }
     
     /**
@@ -220,14 +224,20 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
         return registeredClients[_address];
     }
 
-    function onERC721Received( address , address , uint256 , bytes calldata ) external pure returns (bytes4) {
-        return this.onERC721Received.selector;
+    /**
+     * @notice This function must be called by an ERC721 contract to indicate that it accepts the transfer of an NFT. 
+     * The return value MUST be the bytes4-encoded selector (`IERC721Receiver.onERC721Received(address, address, uint256, bytes)`).
+     * @dev This function is called by the operator or a contract to manage the received tokens.
+     * @return bytes4 The return value must be the same as `IERC721Receiver.onERC721Received(address, address, uint256, bytes)`. This way it is ensured that the contract implements this interface properly. 
+     */
+    function onERC721Received( address, address, uint256, bytes calldata ) external pure returns (bytes4) {
+        return IERC721Receiver.onERC721Received.selector;
     }
 
     function withdraw() external onlyOwner {
         payable(owner()).transfer(address(this).balance);
     }
 
-    // Fallback function to receive ETHd
+    // Fallback function to receive ETH
     receive() external payable {}
 }

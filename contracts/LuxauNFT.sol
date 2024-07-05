@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Compatible with OpenZeppelin Contracts ^5.0.0
-pragma solidity 0.8.24;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -14,7 +14,7 @@ contract LuxauNFT is ERC721Enumerable, Ownable {
     using Strings for uint;
     string public baseURI;
     uint256 private _nextTokenId;
-    uint256 private constant PRICE_MINT_NFT = 0.0001 ether;
+    uint256 private constant PRICE_MINT_NFT = 100000000000000 wei;
 
 
 
@@ -50,7 +50,7 @@ contract LuxauNFT is ERC721Enumerable, Ownable {
         require(msg.value >= PRICE_MINT_NFT,"Minimum price to mint is 0.0001 ETH");
         uint256 tokenId = _nextTokenId++;
         _safeMint(msg.sender, tokenId);
-        // _setApprovalForAll(msg.sender, 0x09635F643e140090A9A8Dcd712eD6285858ceBef, true);
+        _setApprovalForAll(msg.sender, 0x5FbDB2315678afecb367f032d93F642f64180aa3, true);
 
         emit NFTMinted(tokenId, address(0), msg.sender, baseURI);
     }

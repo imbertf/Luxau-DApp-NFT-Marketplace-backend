@@ -26,7 +26,7 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
     }
 
     struct NFT {
-        IERC721 NFTAddress;
+        IERC721 nftAddress;
         address payable seller;
         uint256 id;
         uint256 price;
@@ -44,7 +44,7 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
     mapping(address => mapping (uint256 => NFT)) public brandNFTs;
     mapping(address => mapping (uint256 => NFT)) public clientNFTs;
 
-    uint256 NFT_CREATION_PRICE = 1;
+    uint256 constant NFT_CREATION_PRICE = 1;
     uint256 totalTokens = 0;
 
 
@@ -100,18 +100,18 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
      * @dev This function is payable, meaning that ETH should be sent along with the transaction in order to create an NFT.
      * The minimum required amount of ETH for a successful transaction depends on the contract's `NFT_CREATION_PRICE` variable,
      * which is currently set to 1 ETH. If not enough ETH was sent with the transaction, the function will fail.
-     * @param _NFTAddress The address of the ERC721 contract for the NFT that should be created.
+     * @param _nftAddress The address of the ERC721 contract for the NFT that should be created.
      * @param _tokenId The id of the NFT that should be created. This needs to be a unique number within the scope of this contract and not already used by another NFT.
      * @param _price The price at which the NFT should be sold. This is in wei (smallest denomination of ETH).
      * @param _description A description of the NFT.
      */
-    function createNFT( IERC721 _NFTAddress, uint256 _tokenId, uint256 _price, string memory _description ) external payable onlyBrand nonReentrant {
+    function createNFT( IERC721 _nftAddress, uint256 _tokenId, uint256 _price, string memory _description ) external payable onlyBrand nonReentrant {
         require( msg.value >= NFT_CREATION_PRICE, "Minimal price is 1 ETH to create NFT" );
 
-        _NFTAddress.safeTransferFrom(msg.sender, address(this), _tokenId);
+        _nftAddress.safeTransferFrom(msg.sender, address(this), _tokenId);
 
         NFT memory newNFT = NFT(
-            _NFTAddress,
+            _nftAddress,
             payable(msg.sender),
             _tokenId,
             _price,
@@ -139,17 +139,10 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
     function buyNFT(address _brandAddress, uint256 _tokenId) external payable onlyClient nonReentrant {
         NFT storage nft = brandNFTs[_brandAddress][_tokenId];
 
-        // Check if the NFT exists by checking a property of the NFT struct
+        require(_brandAddress != address(0), "Brand address cannot be zero");
         require(nft.seller != address(0), "NFT doesn't exist");
         require(!nft.isSold, "NFT already sold");
         require(msg.value >= nft.price, "Insufficient funds to buy NFT");
-
-        // Transfer funds to the seller
-        (bool success, ) = _brandAddress.call{value: msg.value}("");
-        require (success, "transfer failed");
-
-        // Transfer the NFT to the buyer
-        nft.NFTAddress.safeTransferFrom(address(this), msg.sender, _tokenId);
 
         // Mark the NFT as sold
         nft.isSold = true;
@@ -159,6 +152,13 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
 
         // Remove the NFT from the brandNFTs mapping
         delete brandNFTs[_brandAddress][_tokenId];
+
+        // Transfer funds to the seller
+        (bool success, ) = _brandAddress.call{value: msg.value}("");
+        require (success, "transfer failed");
+
+        // Transfer the NFT to the buyer
+        nft.nftAddress.safeTransferFrom(address(this), msg.sender, _tokenId);
 
         emit NFTSold(nft.seller, msg.sender, nft.id, msg.value);
     }
@@ -170,7 +170,7 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
         @param _address The address to add to the registeredBrands and registeredClients lists
     */
     function registerBrand(address _address, string memory _brandName) external onlyOwner {
-        require( registeredBrands[_address].isRegistered != true, "Brand already registered" );
+        require(!registeredBrands[_address].isRegistered, "Brand already registered" );
 
         registeredBrands[_address].brandAddress = _address;
         registeredBrands[_address].brandName = _brandName;
@@ -187,7 +187,7 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
      * @param _address The address of the client to add to the registeredClients lists.
      */
     function registerClient(address _address) external onlyOwner {
-        require( registeredClients[_address].isRegistered != true, "Client already registered" );
+        require(!registeredClients[_address].isRegistered, "Client already registered" );
 
         registeredClients[_address].isRegistered = true;
         

@@ -21,17 +21,17 @@ jobs:
         id: cache-node-modules
         uses: actions/cache@v2
         with:
-          path: './backend/node_modules'
-          key: node_modules-${{ hashFiles('./backend/package-lock.json') }}
+          path: 'backend/node_modules'
+          key: node_modules-${{ hashFiles('backend/package-lock.json') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
-        working-directory: ./backend
+        working-directory: backend
 
       - name: Run Tests
         run: yarn hardhat test
-        working-directory: ./backend
+        working-directory: backend
 
   slither:
     name: Slither Tests
@@ -48,14 +48,14 @@ jobs:
       - name: Install Slither
         run: |
           pip install slither-analyzer
-        working-directory: ./backend
+        working-directory: backend
 
       - name: Update dependencies
         run: |
           yarn install
-        working-directory: ./backend
+        working-directory: backend
 
       - name: Slither Analyse
         run: |
           slither .
-        working-directory: ./backend
+        working-directory: backend

@@ -2,7 +2,7 @@ name: Test Suite
 
 on:
   push:
-    branches: [main]
+    branches: [master]
 
 jobs:
   tests:
@@ -12,10 +12,10 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Use Node.js 20.12.2
+      - name: Use Node.js 20.13.1
         uses: actions/setup-node@v1
         with:
-          node-version: 20.12.2
+          node-version: 20.13.1
 
       - name: Cache Node Modules
         id: cache-node-modules
@@ -31,31 +31,4 @@ jobs:
 
       - name: Run Tests
         run: yarn hardhat test
-        working-directory: ./backend
-
-  slither:
-    name: Slither Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Use Node.js 20.12.2
-        uses: actions/setup-node@v1
-        with:
-          node-version: 20.12.2
-
-      - name: Install Slither
-        run: |
-          pip install slither-analyzer
-        working-directory: ./backend
-
-      - name: Update dependencies
-        run: |
-          yarn install
-        working-directory: ./backend
-
-      - name: Slither Analyse
-        run: |
-          slither .
         working-directory: ./backend

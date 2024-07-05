@@ -12,9 +12,9 @@ contract LuxauNFT is ERC721Enumerable, Ownable {
     *             Variables              *
     **************************************/
     using Strings for uint;
-    string public constant baseURI;
+    string public baseURI;
     uint256 private _nextTokenId;
-    uint256 private constant PRICE_MINT_NFT = 100000000000000 wei;
+    uint256 private PRICE_MINT_NFT = 100000000000000 wei;
 
 
 

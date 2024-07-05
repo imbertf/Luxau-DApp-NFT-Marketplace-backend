@@ -232,6 +232,6 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
         return registeredClients[_address];
     }
 
-    // Fallback function to receive ETH
+    // Fallback function to receive ETHd
     receive() external payable {}
 }

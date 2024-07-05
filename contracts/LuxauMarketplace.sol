@@ -95,16 +95,6 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
      *             Functions              *
      **************************************/
     /**
-     * @notice This function must be called by an ERC721 contract to indicate that it accepts the transfer of an NFT. 
-     * The return value MUST be the bytes4-encoded selector (`IERC721Receiver.onERC721Received(address, address, uint256, bytes)`).
-     * @dev This function is called by the operator or a contract to manage the received tokens.
-     * @return bytes4 The return value must be the same as `IERC721Receiver.onERC721Received(address, address, uint256, bytes)`. This way it is ensured that the contract implements this interface properly. 
-     */
-    function onERC721Received( address, address, uint256, bytes calldata ) external pure returns (bytes4) {
-        return IERC721Receiver.onERC721Received.selector;
-    }
-
-    /**
      * @notice This function allows a registered brand to create an ERC721 NFT and list it on the LuxauMarketplace.
      * The NFT will be transferred from the caller's address to this contract's address after creation.
      * Only brands are allowed to use this function.
@@ -230,6 +220,14 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
         require( registeredClients[_address].isRegistered, "Client is not registered");
         
         return registeredClients[_address];
+    }
+
+    function onERC721Received( address operator, address from, uint256 tokenId, bytes calldata data ) external override returns (bytes4) {
+        return this.onERC721Received.selector;
+    }
+
+    function withdraw() external onlyOwner {
+        payable(owner()).transfer(address(this).balance);
     }
 
     // Fallback function to receive ETHd

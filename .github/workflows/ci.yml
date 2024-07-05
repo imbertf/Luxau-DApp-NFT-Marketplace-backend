@@ -57,5 +57,5 @@ jobs:
 
       - name: Slither Analyse
         run: |
-          slither .
+          slither . --filter-paths "openzeppelin"
         working-directory: ./

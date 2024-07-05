@@ -78,13 +78,13 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
      *             Modifiers              *
      **************************************/
     /// @notice Checks if the given address belongs to the brands whitelist
-    modifier onlyBrand() {
+    modifier onlyBrands() {
         require(registeredBrands[msg.sender].isRegistered,"You have to be a registered Brand");
         _;
     }
 
     /// @notice Checks if the given address belongs to the clients whitelist
-    modifier onlyClient() {
+    modifier onlyClients() {
         require(registeredClients[msg.sender].isRegistered,"You have to be a registered Client");
         _;
     }
@@ -116,7 +116,7 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
      * @param _price The price at which the NFT should be sold. This is in wei (smallest denomination of ETH).
      * @param _description A description of the NFT.
      */
-    function createNFT( IERC721 _NFTAddress, uint256 _tokenId, uint256 _price, string memory _description ) external payable onlyBrand nonReentrant {
+    function createNFT( IERC721 _NFTAddress, uint256 _tokenId, uint256 _price, string memory _description ) external payable onlyBrands nonReentrant {
         require( msg.value >= NFT_CREATION_PRICE, "Minimal price is 1 ETH to create NFT" );
 
         _NFTAddress.safeTransferFrom(msg.sender, address(this), _tokenId);
@@ -135,39 +135,6 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
         totalTokens++;
 
         emit NFTCreated(msg.sender, _tokenId, _price, _description);
-    }
-    
-    /**
-     * @notice This function allows a registered client to purchase an ERC721 NFT from a brand on the LuxauMarketplace. 
-     * The NFT will be transferred from this contract's address to the caller's address after the transaction is successful.
-     * Only clients are allowed to use this function.
-     * @dev This function is payable, meaning that ETH should be sent along with the transaction in order to buy an NFT. 
-     * The price of the NFT to be bought depends on the NFT's `price` variable which is set upon creation of the NFT by a brand.
-     * If not enough ETH was sent with the transaction, the function will fail.
-     * @param _brandAddress The address of the brand that lists the NFT for sale. This needs to be registered on this contract.
-     * @param _tokenId The id of the NFT that should be bought. This is a unique number within the scope of LuxauMarketplace and not already sold by another client.
-     */
-    function buyNFT(address _brandAddress, uint256 _tokenId) external payable onlyClient nonReentrant {
-        NFT[] storage nfts = brandNFTs[_brandAddress];
-        bool nftFound = false;
-
-        for (uint256 i = 0; i < nfts.length; i++) {
-            if (nfts[i].id == _tokenId && !nfts[i].isSold) {
-                require(msg.value >= nfts[i].price, "Insufficient funds to buy NFT");
-                nfts[i].seller.transfer(msg.value);
-                nfts[i].NFTAddress.safeTransferFrom(address(this), msg.sender, _tokenId);
-                nfts[i].isSold = true;
-                nftFound = true;
-
-                emit NFTSold(address(nfts[i].NFTAddress));
-
-                break;
-            }
-        }
-
-        if (!nftFound) {
-            revert NFTnotFound(_tokenId, "NFT not found or already sold");
-        }
     }
 
     /** @notice

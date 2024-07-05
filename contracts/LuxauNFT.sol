@@ -82,6 +82,7 @@ contract LuxauNFT is ERC721Enumerable, Ownable {
         return address(this).balance;
     }
 
+
     // Fallback function to receive ETH
     receive() external payable {}
 }

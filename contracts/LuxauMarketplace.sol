@@ -108,8 +108,6 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
     function createNFT( IERC721 _nftAddress, uint256 _tokenId, uint256 _price, string memory _description ) external payable onlyBrand nonReentrant {
         require( msg.value >= NFT_CREATION_PRICE, "Minimal price is 1 ETH to create NFT" );
 
-        _nftAddress.safeTransferFrom(msg.sender, address(this), _tokenId);
-
         NFT memory newNFT = NFT(
             _nftAddress,
             payable(msg.sender),
@@ -120,7 +118,10 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
         );
 
         brandNFTs[msg.sender][_tokenId] = newNFT;
+        
         totalTokens++;
+
+        _nftAddress.safeTransferFrom(msg.sender, address(this), _tokenId);
 
         emit NFTCreated(msg.sender, _tokenId, _price, _description);
     }

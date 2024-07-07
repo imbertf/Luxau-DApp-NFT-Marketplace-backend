@@ -108,7 +108,6 @@ describe("LuxauNFT", function () {
         await luxauNFT.withdraw();
         const newBalance = await luxauNFT.contractBalance();
         await expect(ethers.formatEther(newBalance)).to.equal("0.0");
-        console.log(newBalance);
       })
     })
   })

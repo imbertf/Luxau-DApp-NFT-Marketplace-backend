@@ -65,7 +65,51 @@ describe("LuxauNFT", function () {
         await expect(luxauNFT.tokenURI(0)).to.be.not.revertedWithCustomError(luxauNFT, 'ERC721NonexistentToken')
       })
     })
-
   })
 
+  describe("contractBalance", function () {
+    describe("checks", function () {
+      it('Should revert if NOT owner', async function () {
+        const { luxauNFT, otherAccount } = await loadFixture(deployContractFixture);
+        await expect(luxauNFT.connect(otherAccount).contractBalance()).to.be.revertedWithCustomError(luxauNFT, "OwnableUnauthorizedAccount");
+      })
+      it('Should NOT revert if owner', async function () {
+        const { luxauNFT, owner } = await loadFixture(deployContractFixture);
+        await expect(luxauNFT.contractBalance()).to.be.not.revertedWithCustomError(luxauNFT, "OwnableUnauthorizedAccount");
+      })
+    })
+    describe("effects", function () {
+      it("Should return the correct contract balance", async function () {
+        const { luxauNFT, owner } = await loadFixture(deployContractFixture);
+        const currentBalance = await luxauNFT.contractBalance();
+        await expect(ethers.formatEther(currentBalance)).to.equal("0.0");
+      });
+    })
+  })
+
+  describe("withdraw", function () {
+    describe("checks", function () {
+      it('Should revert if NOT owner', async function () {
+        const { luxauNFT, otherAccount } = await loadFixture(deployContractFixture);
+        await expect(luxauNFT.connect(otherAccount).withdraw()).to.be.revertedWithCustomError(luxauNFT, "OwnableUnauthorizedAccount");
+      })
+      it('Should NOT revert if owner', async function () {
+        const { luxauNFT, owner } = await loadFixture(deployContractFixture);
+        await expect(luxauNFT.withdraw()).to.be.not.revertedWithCustomError(luxauNFT, "OwnableUnauthorizedAccount");
+      })
+    })
+
+    describe("effects", function () {
+      it('Should withdraw contract balance', async function () {
+        const { luxauNFT, owner } = await loadFixture(deployContractFixture);
+        expect(await luxauNFT.safeMint({ value: ethers.parseEther("0.0001") }));
+        const currentBalance = await luxauNFT.contractBalance();
+        expect(await ethers.formatEther(currentBalance)).to.equal("0.0001");
+        await luxauNFT.withdraw();
+        const newBalance = await luxauNFT.contractBalance();
+        await expect(ethers.formatEther(newBalance)).to.equal("0.0");
+        console.log(newBalance);
+      })
+    })
+  })
 });

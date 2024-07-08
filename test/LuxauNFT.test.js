@@ -8,14 +8,14 @@ const { ethers } = require('hardhat');
 
 describe("LuxauNFT", function () {
   async function deployContractFixture() {
-    const _name = "MyToken";
-    const _symbol = "MTK";
-    const _baseURI = "ifps://CID/";
+    // const _name = "MyToken";
+    // const _symbol = "MTK";
+    // const _baseURI = "ifps://CID/";
     const zeroAddress = "0x0000000000000000000000000000000000000000"
 
     const [owner, otherAccount] = await ethers.getSigners();
     const LuxauNFT = await ethers.getContractFactory('LuxauNFT');
-    const luxauNFT = await LuxauNFT.deploy(_name, _symbol, _baseURI);
+    const luxauNFT = await LuxauNFT.deploy();
 
     return { luxauNFT, owner, otherAccount, zeroAddress };
   }
@@ -24,9 +24,9 @@ describe("LuxauNFT", function () {
     it("Should deploy the smart contract", async function () {
       const { luxauNFT, owner } = await loadFixture(deployContractFixture);
       expect(await luxauNFT.owner()).to.equal(owner.address);
-      expect(await luxauNFT.name()).to.equal("MyToken");
-      expect(await luxauNFT.symbol()).to.equal("MTK");
-      expect(await luxauNFT.baseURI()).to.equal("ifps://CID/");
+      expect(await luxauNFT.name()).to.equal("Luxau NFT");
+      expect(await luxauNFT.symbol()).to.equal("LUX");
+      expect(await luxauNFT.baseURI()).to.equal("ipfs://QmTZA9yko3gS5m8VYWsPUJ7N1YCKFTjgcgPuBAcrwxe8KB/json/");
     });
   });
 
@@ -47,7 +47,7 @@ describe("LuxauNFT", function () {
     describe('interactions', function () {
       it('Should emit an event when mint', async function () {
         const { luxauNFT, owner, zeroAddress } = await loadFixture(deployContractFixture);
-        await expect(luxauNFT.safeMint({ value: ethers.parseEther("0.0001") })).to.emit(luxauNFT, 'NFTMinted').withArgs(0, zeroAddress, owner.address, "ifps://CID/");
+        await expect(luxauNFT.safeMint({ value: ethers.parseEther("0.0001") })).to.emit(luxauNFT, 'NFTMinted').withArgs(0, zeroAddress, owner.address, "ipfs://QmTZA9yko3gS5m8VYWsPUJ7N1YCKFTjgcgPuBAcrwxe8KB/json/");
       })
     })
   })

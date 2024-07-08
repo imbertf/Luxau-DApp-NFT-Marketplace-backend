@@ -13,7 +13,7 @@ describe("LuxauMarketplace", function () {
     const luxauMarketplace = await LuxauMarketplace.deploy();
 
     const LuxauNFT = await ethers.getContractFactory('LuxauNFT');
-    const luxauNFT = await LuxauNFT.deploy("MyToken", "MTK", "ipfs://CID/");
+    const luxauNFT = await LuxauNFT.deploy();
 
     // Mint an NFT
     await luxauNFT.safeMint({ value: ethers.parseEther("10") });

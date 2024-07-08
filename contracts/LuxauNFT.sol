@@ -24,16 +24,12 @@ contract LuxauNFT is ERC721Enumerable, Ownable {
     event NFTMinted(uint256 tokenId, address from, address to, string tokenURI);
 
 
-
     /*************************************
     *             Constructor            *
     **************************************/
     constructor(
-        string memory _name,
-        string memory _symbol,
-        string memory _baseURI
-    ) ERC721(_name, _symbol) Ownable(msg.sender) {
-        baseURI = _baseURI;
+    ) ERC721("Luxau NFT", "LUX") Ownable(msg.sender) {
+        baseURI = "ipfs://QmTZA9yko3gS5m8VYWsPUJ7N1YCKFTjgcgPuBAcrwxe8KB/json/";
     }
 
 

@@ -1,9 +1,8 @@
 const { buildModule } = require("@nomicfoundation/hardhat-ignition/modules");
 
-module.exports = buildModule("LockModule", (m) => {
+module.exports = buildModule("LuxauMarketplaceModule", (m) => {
 
-  const luxauNFT = m.contract("LuxauNFT");
   const luxauMarketplace = m.contract("LuxauMarketplace");
 
-  return { luxauNFT, luxauMarketplace };
+  return { luxauMarketplace };
 });

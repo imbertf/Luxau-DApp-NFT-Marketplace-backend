@@ -29,7 +29,7 @@ contract LuxauNFT is ERC721Enumerable, Ownable {
     **************************************/
     constructor(
     ) ERC721("Luxau NFT", "LUX") Ownable(msg.sender) {
-        baseURI = "ipfs://QmTZA9yko3gS5m8VYWsPUJ7N1YCKFTjgcgPuBAcrwxe8KB/json/";
+        baseURI = "ipfs://QmTZA9yko3gS5m8VYWsPUJ7N1YCKFTjgcgPuBAcrwxe8KB/img";
     }
 
 
@@ -65,7 +65,7 @@ contract LuxauNFT is ERC721Enumerable, Ownable {
      */
     function tokenURI(uint _tokenId) public view virtual override (ERC721) returns (string memory) {
          _requireOwned(_tokenId);
-        return string(abi.encodePacked((baseURI), "/product_", _tokenId.toString(), ".json"));
+        return string(abi.encodePacked((baseURI), "/product_", _tokenId.toString(), ".png"));
     }
     
     /**

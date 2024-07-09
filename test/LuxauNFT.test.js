@@ -26,7 +26,7 @@ describe("LuxauNFT", function () {
       expect(await luxauNFT.owner()).to.equal(owner.address);
       expect(await luxauNFT.name()).to.equal("Luxau NFT");
       expect(await luxauNFT.symbol()).to.equal("LUX");
-      expect(await luxauNFT.baseURI()).to.equal("ipfs://QmTZA9yko3gS5m8VYWsPUJ7N1YCKFTjgcgPuBAcrwxe8KB/json/");
+      expect(await luxauNFT.baseURI()).to.equal("ipfs://QmTZA9yko3gS5m8VYWsPUJ7N1YCKFTjgcgPuBAcrwxe8KB/img");
     });
   });
 
@@ -47,7 +47,7 @@ describe("LuxauNFT", function () {
     describe('interactions', function () {
       it('Should emit an event when mint', async function () {
         const { luxauNFT, owner, zeroAddress } = await loadFixture(deployContractFixture);
-        await expect(luxauNFT.safeMint({ value: ethers.parseEther("0.0001") })).to.emit(luxauNFT, 'NFTMinted').withArgs(0, zeroAddress, owner.address, "ipfs://QmTZA9yko3gS5m8VYWsPUJ7N1YCKFTjgcgPuBAcrwxe8KB/json/");
+        await expect(luxauNFT.safeMint({ value: ethers.parseEther("0.0001") })).to.emit(luxauNFT, 'NFTMinted').withArgs(0, zeroAddress, owner.address, "ipfs://QmTZA9yko3gS5m8VYWsPUJ7N1YCKFTjgcgPuBAcrwxe8KB/img");
       })
     })
   })

@@ -2,7 +2,7 @@ require("@nomicfoundation/hardhat-toolbox");
 require("@nomicfoundation/hardhat-verify");
 require('dotenv').config()
 
-const INFURA_RPC_URL = process.env.INFURA_RPC_URL || "";
+const ALCHEMY_RPC_URL = process.env.ALCHEMY_RPC_URL || "";
 const PK = process.env.PK || "";
 const ETHERSCAN = process.env.ETHERSCAN || "";
 
@@ -10,13 +10,13 @@ module.exports = {
   solidity: "0.8.24",
   networks: {
     sepolia: {
-      url: INFURA_RPC_URL,
-      accounts: [`${PK}`],
+      url: ALCHEMY_RPC_URL,
+      accounts: [`0x${PK}`],
       chainId: 11155111
     },
     base_sepolia: {
-      url: 'https://sepolia.base.org',
-      accounts: [`${PK}`],
+      url: ALCHEMY_RPC_URL,
+      accounts: [`0x${PK}`],
       chainId: 84532
     },
     localhost: {

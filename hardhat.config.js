@@ -11,8 +11,12 @@ module.exports = {
   networks: {
     sepolia: {
       url: INFURA_RPC_URL,
-      accounts: [`0x${PK}`],
+      accounts: [`${PK}`],
       chainId: 11155111
+    },
+    base_sepolia: {
+      url: 'https://sepolia.base.org',
+      accounts: [`${PK}`],
     },
     localhost: {
       url: "http://127.0.0.1:8545",

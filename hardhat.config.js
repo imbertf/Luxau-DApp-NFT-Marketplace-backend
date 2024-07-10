@@ -5,7 +5,7 @@ require('dotenv').config()
 const ALCHEMY_RPC_URL = process.env.ALCHEMY_RPC_URL || "";
 const PK = process.env.PK || "";
 const ETHERSCAN = process.env.ETHERSCAN || "";
-
+console.log(PK);
 module.exports = {
   solidity: "0.8.24",
   networks: {

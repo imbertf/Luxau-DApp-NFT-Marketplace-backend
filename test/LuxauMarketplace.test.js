@@ -83,6 +83,7 @@ describe("LuxauMarketplace", function () {
         const NFT_ADDRESS = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
         const TOKEN_ID = 0;
         const PRICE = ethers.parseEther("1");
+        const BRANDNAME = "Luxau Lifestyle Elegance";
         const DESCRIPTION = "Test NFT";
 
         luxauNFT.safeMint({ value: ethers.parseEther("10") });
@@ -91,7 +92,7 @@ describe("LuxauMarketplace", function () {
           luxauMarketplace.createNFT(NFT_ADDRESS, TOKEN_ID, PRICE, DESCRIPTION, { value: PRICE })
         )
           .to.emit(luxauMarketplace, "NFTCreated")
-          .withArgs(owner.address, TOKEN_ID, PRICE, DESCRIPTION);
+          .withArgs(owner.address, TOKEN_ID, PRICE, BRANDNAME, DESCRIPTION);
       })
     })
   });

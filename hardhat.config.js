@@ -10,7 +10,7 @@ module.exports = {
   networks: {
     base_sepolia: {
       url: ALCHEMY_URL,
-      accounts: [`0x${PK}`],
+      accounts: [`${PK}`],
       chainId: 84532
     },
     localhost: {

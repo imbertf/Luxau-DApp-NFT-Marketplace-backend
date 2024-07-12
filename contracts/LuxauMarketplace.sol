@@ -157,12 +157,12 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
 
         // Remove the NFT from the brandNFTs mapping
         delete brandNFTs[_brandAddress][_tokenId];
-        
+
         // Transfer funds to the seller
         (bool success, ) = _brandAddress.call{value: msg.value}("");
         require(success, "transfer failed");
 
-        emit NFTSold(nft.seller, msg.sender, nft.id, msg.value, nft.isSold);
+        emit NFTSold(nft.seller, msg.sender, _tokenId, msg.value, true);
     }
 
     /** @notice

@@ -11,21 +11,12 @@ const {
   ETHERSCAN = ""
 } = process.env
 
-function utf8ToHex(str) {
-  return Array.from(str).map(c =>
-    c.charCodeAt(0) < 128 ? c.charCodeAt(0).toString(16) :
-      encodeURIComponent(c).replace(/\%/g, '').toLowerCase()
-  ).join('');
-}
-
-const BASE_SEPOLIA = utf8ToHex(PK_BASE_SEPOLIA);
-
 module.exports = {
   solidity: "0.8.24",
   networks: {
     base_sepolia: {
       url: ALCHEMY_RPC_URL,
-      accounts: [BASE_SEPOLIA],
+      accounts: [PK_BASE_SEPOLIA],
       chainId: 84532
     },
     localhost: {

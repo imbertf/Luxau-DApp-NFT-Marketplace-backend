@@ -4,19 +4,19 @@ require('dotenv').config()
 
 
 
-const {
-  ALCHEMY_RPC_URL = "",
-  PK_HARDHAT = "",
-  PK_BASE_SEPOLIA,
-  ETHERSCAN = ""
-} = process.env
+// const {
+//   ALCHEMY_RPC_URL = "",
+//   PK_HARDHAT = "",
+//   PK_BASE_SEPOLIA,
+//   ETHERSCAN = ""
+// } = process.env
 
 module.exports = {
   solidity: "0.8.24",
   networks: {
     base_sepolia: {
       url: ALCHEMY_RPC_URL,
-      accounts: [PK_BASE_SEPOLIA],
+      accounts: [process.env.PK_BASE_SEPOLIA],
       chainId: 84532
     },
     localhost: {

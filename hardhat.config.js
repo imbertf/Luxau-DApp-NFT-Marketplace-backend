@@ -7,7 +7,7 @@ require('dotenv').config()
 const {
   ALCHEMY_RPC_URL = "",
   PK_HARDHAT = "",
-  PK_BASE_SEPOLIA = "",
+  PK_BASE_SEPOLIA,
   ETHERSCAN = ""
 } = process.env
 

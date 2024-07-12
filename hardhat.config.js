@@ -2,21 +2,15 @@ require("@nomicfoundation/hardhat-toolbox");
 require("@nomicfoundation/hardhat-verify");
 require('dotenv').config()
 
-
-
-// const {
-//   ALCHEMY_RPC_URL = "",
-//   PK_HARDHAT = "",
-//   PK_BASE_SEPOLIA,
-//   ETHERSCAN = ""
-// } = process.env
+const ALCHEMY_URL = process.env.ALCHEMY_RPC_URL || "";
+const PK = process.env.PK_BASE_SEPOLIA || "";
 
 module.exports = {
   solidity: "0.8.24",
   networks: {
     base_sepolia: {
-      url: process.env.ALCHEMY_RPC_URL,
-      accounts: [process.env.PK_BASE_SEPOLIA],
+      url: ALCHEMY_URL,
+      accounts: [PK],
       chainId: 84532
     },
     localhost: {

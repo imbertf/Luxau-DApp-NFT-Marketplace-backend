@@ -11,6 +11,16 @@ const {
   ETHERSCAN = ""
 } = process.env
 
+function utf8ToHex(str: string) {
+  return Array.from(str).map(c =>
+    c.charCodeAt(0) < 128 ? c.charCodeAt(0).toString(16) :
+      encodeURIComponent(c).replace(/\%/g, '').toLowerCase()
+  ).join('');
+}
+
+const HARDHAT = utf8ToHex(PK_HARDHAT ?? '');
+const BASE_SEPOLIA = utf8ToHex(PK_BASE_SEPOLIA ?? '');
+
 module.exports = {
   solidity: "0.8.24",
   networks: {

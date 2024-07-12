@@ -15,7 +15,7 @@ module.exports = {
   solidity: "0.8.24",
   networks: {
     base_sepolia: {
-      url: ALCHEMY_RPC_URL,
+      url: process.env.ALCHEMY_RPC_URL,
       accounts: [process.env.PK_BASE_SEPOLIA],
       chainId: 84532
     },
@@ -25,6 +25,6 @@ module.exports = {
     }
   },
   etherscan: {
-    apiKey: ETHERSCAN
+    apiKey: process.env.ETHERSCAN
   },
 };

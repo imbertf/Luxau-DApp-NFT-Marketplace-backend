@@ -19,7 +19,7 @@ function utf8ToHex(str) {
 }
 
 const HARDHAT = utf8ToHex(PK_HARDHAT ?? '');
-const BASE_SEPOLIA = utf8ToHex(PK_BASE_SEPOLIA ?? '');
+const BASE_SEPOLIA = utf8ToHex(PK_BASE_SEPOLIA);
 
 module.exports = {
   solidity: "0.8.24",

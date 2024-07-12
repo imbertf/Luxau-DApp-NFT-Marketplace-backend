@@ -26,12 +26,12 @@ module.exports = {
   networks: {
     base_sepolia: {
       url: ALCHEMY_RPC_URL,
-      accounts: [PK_BASE_SEPOLIA],
+      accounts: [BASE_SEPOLIA],
       chainId: 84532
     },
     localhost: {
       url: "http://127.0.0.1:8545",
-      accounts: [PK_HARDHAT],
+      accounts: [HARDHAT],
       chainId: 31337,
     }
   },

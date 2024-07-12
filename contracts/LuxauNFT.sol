@@ -46,8 +46,8 @@ contract LuxauNFT is ERC721Enumerable, Ownable {
         require(msg.value >= PRICE_MINT_NFT,"Minimum price to mint is 0.0001 ETH");
         uint256 tokenId = _nextTokenId++;
         _safeMint(msg.sender, tokenId);
-        // _setApprovalForAll(msg.sender, 0x5FbDB2315678afecb367f032d93F642f64180aa3, true); // hardhat
-        _setApprovalForAll(msg.sender, 0xFa6cF5581f0bD92aE9B224099e09b83e464dA762, true); // baseSepolia
+        _setApprovalForAll(msg.sender, 0x5FbDB2315678afecb367f032d93F642f64180aa3, true); // hardhat
+        // _setApprovalForAll(msg.sender, 0xFa6cF5581f0bD92aE9B224099e09b83e464dA762, true); // baseSepolia
 
         emit NFTMinted(tokenId, address(0), msg.sender, baseURI);
     }

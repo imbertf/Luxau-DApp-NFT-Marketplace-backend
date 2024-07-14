@@ -8,11 +8,7 @@ const { ethers } = require('hardhat');
 
 describe("LuxauNFT", function () {
   async function deployContractFixture() {
-    // const _name = "MyToken";
-    // const _symbol = "MTK";
-    // const _baseURI = "ifps://CID/";
     const zeroAddress = "0x0000000000000000000000000000000000000000"
-
     const [owner, otherAccount] = await ethers.getSigners();
     const LuxauNFT = await ethers.getContractFactory('LuxauNFT');
     const luxauNFT = await LuxauNFT.deploy();

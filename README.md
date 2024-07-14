@@ -1,15 +1,68 @@
-# Sample Hardhat Project
+# Luxau NFT Marketplace - Backend
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a Hardhat Ignition module that deploys that contract.
+## Description
 
-Try running some of the following tasks:
+Decentralized marketplace specializing in luxury NFT transactions, each representing a physical item. Once purchased, the seller directly ships the product to the buyer.
 
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat ignition deploy ./ignition/modules/Lock.js
+## Technologies Used
+
+- **Solidity**
+- **Node.js**
+- **Yarn**
+- **Hardhat**
+- **OpenZeppelin**
+- **Chai**
+- **Ethers**
+
+## Prerequisites
+
+```bash
+yarn add --dev hardhat
+npx hardhat init
+```
+
+## Installation
+
+1. Clone the repository.
+2. Run yarn install to install the dependencies.
+
+## Usage
+
+Launch the blockchain with the command:
+
+```bash
+yarn hardhat node
+```
+
+Deploy the contracts:
+
+```bash
+yarn hardhat ignition deploy ./ignition/modules/LuxauMarketplace.js --network localhost
+yarn hardhat ignition deploy ./ignition/modules/LuxauNFT.js --network localhost
 ```
 
 ## Tests
+
+Run the tests with:
+
+```bash
+yarn hardhat test
+```
+
+For coverage:
+
+```bash
+yarn hardhat coverage
+```
+
+## Licence
+
+MIT License.
+
+## Contact
+
+Email : f.imbert4@gmail.com
+
+## Authors
+
+Imbertf

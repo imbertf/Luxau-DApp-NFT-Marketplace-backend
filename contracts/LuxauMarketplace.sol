@@ -152,29 +152,15 @@ contract LuxauMarketplace is Ownable, ReentrancyGuard {
         clientNFTs[msg.sender][_tokenId] = nft;
 
 
-        // // Transfer the NFT to the buyer
-        // nft.NFTAddress.safeTransferFrom(address(this), msg.sender, _tokenId);
-
-        // // Remove the NFT from the brandNFTs mapping
-        // delete brandNFTs[_brandAddress][_tokenId];
-
-        // // Transfer funds to the seller
-        // (bool success, ) = _brandAddress.call{value: msg.value}("");
-        // require(success, "transfer failed");
-                // Transférer l'NFT à l'acheteur
+        // Transfer the NFT to the buyer
         nft.NFTAddress.safeTransferFrom(address(this), msg.sender, _tokenId);
 
-        // Transférer les fonds au vendeur
-        (bool success, ) = nft.seller.call{value: msg.value}("");
-        if (!success) {
-            // En cas d'échec, annuler la vente
-            nft.isSold = false;
-            delete clientNFTs[msg.sender][_tokenId];
-            revert("Transfer failed");
-        }
-
-        // Supprimer l'NFT du mapping des marques après la réussite du transfert
+        // Remove the NFT from the brandNFTs mapping
         delete brandNFTs[_brandAddress][_tokenId];
+
+        // Transfer funds to the seller
+        (bool success, ) = _brandAddress.call{value: msg.value}("");
+        require(success, "transfer failed");
 
         emit NFTSold(nft.seller, msg.sender, _tokenId, msg.value, true);
     }
